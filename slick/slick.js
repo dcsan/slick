@@ -1543,25 +1543,43 @@
     Slick.prototype.swipeDirection = function() {
 
         var xDist, yDist, r, swipeAngle, _ = this;
-
+		
         xDist = _.touchObject.startX - _.touchObject.curX;
         yDist = _.touchObject.startY - _.touchObject.curY;
-        r = Math.atan2(yDist, xDist);
+        
+		if(_.options.vertical == true) {
+			r = Math.atan2(xDist, yDist);
+		} else {
+			r = Math.atan2(yDist, xDist);
+		}
+		
 
         swipeAngle = Math.round(r * 180 / Math.PI);
         if (swipeAngle < 0) {
             swipeAngle = 360 - Math.abs(swipeAngle);
         }
-
-        if ((swipeAngle <= 45) && (swipeAngle >= 0)) {
-            return 'left';
-        }
-        if ((swipeAngle <= 360) && (swipeAngle >= 315)) {
-            return 'left';
-        }
-        if ((swipeAngle >= 135) && (swipeAngle <= 225)) {
-            return 'right';
-        }
+		console.log(swipeAngle);
+		if(_.options.vertical == true) {
+		    if ((swipeAngle <= 45) && (swipeAngle >= 0)) {
+	            return 'top';
+	        }
+	        if ((swipeAngle <= 360) && (swipeAngle >= 290)) {
+	            return 'top';
+	        }
+	        if ((swipeAngle >= 135) && (swipeAngle <= 225)) {
+	            return 'bottom';
+	        }
+		} else {
+		    if ((swipeAngle <= 45) && (swipeAngle >= 0)) {
+	            return 'left';
+	        }
+	        if ((swipeAngle <= 360) && (swipeAngle >= 315)) {
+	            return 'left';
+	        }
+	        if ((swipeAngle >= 135) && (swipeAngle <= 225)) {
+	            return 'right';
+	        }	
+		}
 
         return 'vertical';
 
@@ -1602,6 +1620,16 @@
                     _.slideHandler(_.currentSlide - slideCount);
                     _.touchObject = {};
                     break;
+                case 'top':
+                    _.slideHandler(_.currentSlide + slideCount);
+                    _.touchObject = {};
+                    break;
+
+                case 'bottom':
+                    _.slideHandler(_.currentSlide - slideCount);
+                    _.touchObject = {};
+                    break;
+
             }
         } else {
             if(_.touchObject.startX !== _.touchObject.curX) {
@@ -1680,8 +1708,7 @@
         if (_.options.vertical === false) {
             _.swipeLeft = curLeft + _.touchObject.swipeLength * positionOffset;
         } else {
-            _.swipeLeft = curLeft + (_.touchObject
-                .swipeLength * (_.$list.height() / _.listWidth)) * positionOffset;
+			_.swipeLeft = curLeft + (_.touchObject.swipeLength * (_.$list.height() / _.listWidth)) * positionOffset;
         }
 
         if (_.options.fade === true || _.options.touchMove === false) {
